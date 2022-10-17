@@ -1,4 +1,5 @@
-﻿@model List<Pizza>
+﻿@using la_mia_pizzeria_static.Models
+@model List<Pizza>
 <!doctype html>
 <html lang="en">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -15,8 +16,14 @@
                         <h2 class="card-title text-danger">Pizza @pizza.Name</h2>
                     <h5 class="card-text">Descrizione: @pizza.Ingredients</h5>
                     <h5>Prezzo: € @pizza.Price</h5>
-                    
+                    <h6>Ingredienti: </h6>
+                    @foreach (Ingre ing in pizza.Ingres)
+                    {
+                                     <p class="d-inline">@ing.Name </p>
+                    }
+                              ;
                     <p>Id: @pizza.Id</p>
+                        <h6 class="mb-0">Categoria: Pizze @pizza.Category.Name</h6>
                     <div class="d-flex justify-content-between">
                             <a href="@Url.Action("Details","Pizza", new{ id = pizza.Id})"><button class="btn-primary">Info</button></a>
                             <a href="@Url.Action("Update","Pizza", new{ id = pizza.Id})"><button class="btn-secondary">Modifica</button></a> 
