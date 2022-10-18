@@ -41,7 +41,7 @@ namespace la_mia_pizzeria_static.Migrations
             //    type: "nvarchar(128)",
             //    maxLength: 128,
             //    nullable: false,
-            //    oldClrType: typeof(string),
+            //    oldClrType: typeof(string),ù
             //    oldType: "nvarchar(450)");
 
             migrationBuilder.CreateTable(
