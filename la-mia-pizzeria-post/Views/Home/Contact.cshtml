@@ -1,0 +1,60 @@
+﻿@using la_mia_pizzeria_static.Models
+@{
+    ViewData["Title"] = "Home Page";
+}
+@model List<Pizza>;
+
+<h1>Contattaci</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 mt-5">
+            <h2>Contattami</h2>
+            <form onsubmit="InviaMessaggio(event)">
+                <div class="mb-3">
+                    <label for="contact-email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="contact-email" >
+                </div>
+                <div class="mb-3">
+                    <label for="contact-name" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="contact-name" >
+                </div>
+                <div class="mb-3">
+                    <label for="contact-title" class="form-label">Titolo</label>
+                    <input type="text" class="form-control" id="contact-title" >
+                </div>
+                <div class="mb-3">
+                    <label for="contact-text" class="form-label">Testo</label>
+                    <textarea class="form-control" id="contact-text" rows="10" ></textarea>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Invia" />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function InviaMessaggio(e){
+        //blocco invio calssico form
+        e.preventDefault();
+        axios.post("/api/message/send",{
+            email: document.querySelector('#contact-email').value,
+            name: document.querySelector('#contact-name').value,
+            title: document.querySelector('#contact-title').value,
+            text: document.querySelector('#contact-text').value,
+        }).then(res=>{
+            document.querySelector('#contact-email').value = '';
+            document.querySelector('#contact-name').value = '';
+            document.querySelector('#contact-title').value = '';
+            document.querySelector('#contact-text').value = '';
+            // in una versione avanzata questo alert è da fare più carino, ma non è scopo di questa esercitazione
+            alert('Messaggio inviato correttamente');
+        }).catch(err=>{
+            console.log(err);
+            alert('Opps, dati non validi, riprova!');
+        })
+
+    }
+</script>

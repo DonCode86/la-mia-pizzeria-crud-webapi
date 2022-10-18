@@ -23,6 +23,8 @@ namespace la_mia_pizzeria.Models
 
         public DbSet<Ingre> Ingres { get; set; }
 
+        public DbSet<Message> Messages { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=db-pizzeria_auth;Integrated Security=True");

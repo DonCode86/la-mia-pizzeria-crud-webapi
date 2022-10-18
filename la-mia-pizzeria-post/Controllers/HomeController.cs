@@ -12,6 +12,10 @@ namespace la_mia_pizzeria.Controllers
         {
             _logger = logger;
         }
+        public IActionResult Contact()
+        {
+            return View();
+        }
 
         public IActionResult Index()
         {
