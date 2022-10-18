@@ -33,7 +33,7 @@ namespace la_mia_pizzeria_static.Controllers.Api
         }
 
 
-        //api/post/get/[qualqune numero]
+       
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
