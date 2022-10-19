@@ -4,79 +4,128 @@
 }
 @model List<Pizza>;
 
-<h1>Home page</h1>
-
-
 <div class="container">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="mt-3 mb-3">Lista pizze</h1>
                 <div>
-                    <input type="text" class="js_search form-control" placeholder="Cerca per titolo..." >
+                    <input type="text" class="js_search form-control" placeholder="Cerca la tua pizza">
                 </div>
             </div>
         </div>
     </div>
-    <div class="row pizza text-center d-none">
+    <div class="row js_no_post text-center d-none">
         <div class="col-12">
-            <h3>Non hai inserito nessuna pizza!</h3>
+            <h3>Non hai inserito alcun post</h3>
         </div>
     </div>
-    <div class="row js_pizza_table d-none">
+    <div class="row js_post_table d-none">
         <!-- qui verranno mostrati gli elementi -->
+    </div>
+    <div>
+        <div class="col-12 mt-5">
+            <h2>Contattami</h2>
+            <form onsubmit="inviaMessaggio(event)">
+              <div class="mb-3">
+                <label for="contact-email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="contact-email" required>
+              </div>
+              <div class="mb-3">
+                <label for="contact-name" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="contact-name" required>
+              </div>
+              <div class="mb-3">
+                <label for="contact-title" class="form-label">Titolo</label>
+                <input type="text" class="form-control" id="contact-title" required>
+              </div>
+              <div class="mb-3">
+                <label for="contact-text" class="form-label">Testo</label>
+                <textarea class="form-control" id="contact-text" rows="10" required></textarea>
+              </div>
+              <input type="submit" class="btn btn-primary" value="Invia" />
+            </form>
+        </div>
     </div>
 </div>
 
+@section Scripts {
 
-<script type="text/javascript">
-
-    document.querySelector(".js_search").addEventListener('keyup',searchPizza);
-
-    function searchPizza(){
-        let name = this.value;
-        
-        getPizza(name);
-    }
-
-     function getPizza(title){
-
-    axios.get('/api/pizza/get',{
-            params:{
-                name: name
-            }
-        }).then(res => {
-            console.log('risultato ok', res);
-
-        if (res.data.length == 0) {
-            document.querySelector('.js_no_pizza').classList.remove('d-none');
-            document.querySelector('.js_pizza_table').classList.add('d-none');
-        } else {
-            document.querySelector('.js_pizza_table').classList.remove('d-none');
-            document.querySelector('.js_no_pizza').classList.add('d-none');
-            document.querySelector('.js_pizza_table').innerHTML = '';
-            res.data.forEach(pizza => {
-                console.log('pizza', pizza);
-                document.querySelector('.js_pizza_table').innerHTML +=
-                `
-                <div class="col-12 col-md-4 p-2">
-                    <div class="card post h-100">
-                        <img src="${pizza.image}" class="card-img-top" alt="...">
-                       <div class="card-body">
-                        <h5 class="card-title">${pizza.name}</h5>
-                       <p class="card-text">${pizza.price}</p>
-                        </div>
-                    </div>
-                </div>
-               `;
+    <script type="text/javascript">
+        loadList();
+        function loadList(search) {
+            axios.get('/api/pizza/get', {
+                params : {
+                    search : search
+                }
+            }).then((res) => {
+                console.log('risultato ok', res);
+                if (res.data.length == 0) {
+                    document.querySelector('.js_no_post').classList.remove('d-none');
+                    document.querySelector('.js_post_table').classList.add('d-none');
+                } else {
+                    document.querySelector('.js_post_table').classList.remove('d-none');
+                    document.querySelector('.js_no_post').classList.add('d-none');
+                    document.querySelector('.js_post_table').innerHTML = '';
+                    res.data.forEach(pizza => {
+                        console.log('pizza', pizza);
+                        document.querySelector('.js_post_table').innerHTML += 
+                            `
+                            <div class="col-12 col-md-4 p-2">
+                                <div class="card post h-100">
+                                      <a href="/Home/Details/${pizza.id}">
+                                          <img src="${pizza.image}" class="card-img-top" alt="...">
+                                      <div class="card-body">
+                                            <h5 class="card-title">${pizza.name}</h5>
+                                            <p class="card-text">${pizza.ingredients}</p>
+                                            <p class="card-text">prezzo: ${pizza.price}</p>
+                                      </div>
+                                  </a>
+                                  <button onclick="deletePizza(${pizza.id})" class="btn btn-danger">Elimina</button>
+                                </div>
+                            </div>
+                            `;
+                    });
+                }
             });
-       }
-    }).catch(err => {
-        console.log("error",err);
-        document.querySelector('.js_pizza_table').classList.remove('d-none');
-        document.querySelector('.js_no_pizza').classList.add('d-none');
-        document.querySelector('.js_pizza_table').innerHTML = '';
-        document.querySelector('.js_pizza_table').innerHTML = "<div class'alert alert-danger'> "+ err.message+ "</div>"; 
-    });   
-    }
-</script>
+        }
+        getPizza("");
+
+        document.querySelector('.js_search').addEventListener('keyup', searchItems);
+        function searchItems() {
+            console.log('search items');
+            loadList(this.value);
+        }
+        function inviaMessaggio(e) {
+            e.preventDefault();
+            axios.pizza('/api/messages', {
+                email: document.querySelector('#contact-email').value,
+                name: document.querySelector('#contact-name').value,
+                title: document.querySelector('#contact-title').value,
+                text: document.querySelector('#contact-text').value,
+            })
+            .then(function (response) {
+                document.querySelector('#contact-email').value = '';
+                document.querySelector('#contact-name').value = '';
+                document.querySelector('#contact-title').value = '';
+                document.querySelector('#contact-text').value = '';
+                // in una versione avanzata questo alert è da fare più carino, ma non è scopo di questa esercitazione
+                alert('Messaggio inviato correttamente');
+            });
+        }
+
+        function deletePizza (id) {
+
+            axios.delete('/api/pizza/delete/' + id).then(res=> {
+                console.log(res);
+                loadList("");
+                alert('scusa Paolo, mi hai eleminato :(');
+            }).catch(err=> {
+                    console.log(err);
+                    alert('Non posso elimanarla!');
+            })
+            
+            
+        }
+    </script>
+}
